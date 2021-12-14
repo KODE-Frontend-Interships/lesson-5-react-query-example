@@ -2,6 +2,7 @@ import { StrictMode, ReactNode, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 import { AppThemeProvider, styled } from '@shared/ui/theme';
 import { AppNavigation } from '@pages/ui';
@@ -22,6 +23,8 @@ const customFonts = {
   SF_PRO_MEDIUM_500: require('../../../assets/fonts/SFProDisplay-Medium.ttf'),
   SF_PRO_REGULAR_400: require('../../../assets/fonts/SFProDisplay-Regular.ttf'),
 };
+
+const queryClient = new QueryClient();
 
 type Props = {
   storybookUI?: ReactNode;
@@ -50,11 +53,13 @@ export const App = ({ storybookUI }: Props) => {
 
   return (
     <StrictMode>
-      <AppThemeProvider>
-        <NavigationContainer>
-          <AppNavigation />
-        </NavigationContainer>
-      </AppThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <AppThemeProvider>
+          <NavigationContainer>
+            <AppNavigation />
+          </NavigationContainer>
+        </AppThemeProvider>
+      </QueryClientProvider>
     </StrictMode>
   );
 };
