@@ -1,10 +1,11 @@
-import { ActivityIndicator, ScrollView } from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl } from 'react-native';
+import { useTheme } from 'styled-components';
 
 import { PageTemplate } from '@shared/ui/core/templates';
 import { Typography } from '@shared/ui/core/typography';
 import { styled } from '@shared/ui/theme';
 
-import { TAccountListItem } from './types';
+import { TAccountListItem } from '../../types';
 
 const CenterPage = styled(PageTemplate)`
   justify-content: center;
@@ -29,7 +30,7 @@ const StatusText = styled(Typography)`
 const CardAmountText = styled(Typography)`
   color: ${({ theme }) => theme.palette.text.secondary};
 `;
-const ErrorText = styled(Typography)`
+const MessageText = styled(Typography)`
   padding: ${({ theme }) => theme.spacing(4)}px;
   color: ${({ theme }) => theme.palette.text.primary};
   text-align: center;
@@ -37,40 +38,66 @@ const ErrorText = styled(Typography)`
 
 type Props = {
   data: TAccountListItem[];
-  isFetching?: boolean;
+  isLoading?: boolean;
+  isRefetching?: boolean;
   hasError?: boolean;
-  onAccountClick: () => void;
+  onAccountClick: (id: number) => void;
+  onRefresh: () => void;
 };
 
+// Данный компонент ничего не знает о реальных данных
+// и ожидает их в таком виде, которые нам необходимы
+// для отображения
 export const AccountsPage = ({
   data,
-  isFetching,
+  isLoading,
+  isRefetching,
   hasError,
   onAccountClick,
+  onRefresh,
 }: Props) => {
-  if (isFetching) {
+  const theme = useTheme();
+  // Показываем заглушку при первой
+  // загрузке и отсутствии данных
+  if (isLoading) {
     return (
       <CenterPage>
-        <ActivityIndicator />
+        <ActivityIndicator color={theme.palette.accent.tertiary} />
       </CenterPage>
     );
   }
 
+  // И показываем заглушку при ошибке
   if (hasError) {
     return (
       <CenterPage>
-        <ErrorText variant="body17Regular">
+        <MessageText variant="body17Regular">
           {`Произошла ошибка!\nT__T`}
-        </ErrorText>
+        </MessageText>
       </CenterPage>
     );
   }
 
   return (
     <PageTemplate>
-      <ScrollView>
-        {data.map(item => (
-          <AccountWrapper onPress={onAccountClick} key={item.accountNumber}>
+      <FlatList
+        data={data}
+        // Проп для обновления данных при свайпе
+        refreshControl={
+          <RefreshControl
+            tintColor={theme.palette.accent.tertiary}
+            refreshing={Boolean(isRefetching)}
+            onRefresh={onRefresh}
+          />
+        }
+        // При пустом массиве показываем заглушку
+        ListEmptyComponent={
+          <MessageText variant="body17Regular">Ничего нет!</MessageText>
+        }
+        // Получаем ключи из уникальных айдишников
+        keyExtractor={item => String(item.id)}
+        renderItem={({ item }) => (
+          <AccountWrapper onPress={() => onAccountClick(item.id)}>
             <TitleNumber variant="body20">
               {String(item.accountNumber)}
             </TitleNumber>
@@ -79,8 +106,8 @@ export const AccountsPage = ({
               {`Количество карт: ${item.cardAmount}`}
             </CardAmountText>
           </AccountWrapper>
-        ))}
-      </ScrollView>
+        )}
+      />
     </PageTemplate>
   );
 };

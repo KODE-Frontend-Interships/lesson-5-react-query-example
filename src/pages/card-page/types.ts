@@ -1,5 +1,6 @@
 export type TCardListItem = {
-  cardNumber: number;
+  id: string;
+  cardNumber: string;
   name: string;
   paymentSystem: string;
 };

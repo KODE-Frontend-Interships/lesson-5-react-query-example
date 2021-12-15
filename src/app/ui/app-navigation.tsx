@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { AccountsPageConnector } from '../accounts-page';
-import { CardPageConnector } from '../card-page';
+import { AccountsPageConnector } from '@pages/accounts-page';
+import { CardPageConnector } from '@pages/card-page';
 
 const Stack = createNativeStackNavigator();
 

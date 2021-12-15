@@ -5,7 +5,8 @@ import { useFonts } from 'expo-font';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
 import { AppThemeProvider, styled } from '@shared/ui/theme';
-import { AppNavigation } from '@pages/ui';
+
+import { AppNavigation } from './app-navigation';
 
 const StorybookButton = styled.TouchableOpacity`
   height: 32px;

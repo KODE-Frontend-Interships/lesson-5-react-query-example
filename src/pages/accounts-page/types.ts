@@ -1,5 +1,6 @@
 export type TAccountListItem = {
-  accountNumber: number;
+  id: number;
+  accountNumber: string;
   status: string;
   cardAmount: number;
 };
